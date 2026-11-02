@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Datacenter Tycoon</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#0a101c;--p:#121c30;--p2:#182540;--ln:#25365a;--tx:#e8f0ff;--mu:#8fa3c7;--cy:#3ee0ff;--am:#ffb43a;--rd:#ff5a4d;--gn:#34d399;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font-family:'Chakra Petch',system-ui,sans-serif;overflow:hidden;overscroll-behavior:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button{font:inherit;color:inherit;border:0;background:none;touch-action:manipulation}
+#app{height:100%;display:flex;flex-direction:column}
+header{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 16px 4px}
+#cr{font-size:clamp(34px,10vw,60px);font-weight:700;color:var(--am);line-height:1;font-variant-numeric:tabular-nums}
+#cps{color:var(--mu);font-size:clamp(14px,3.6vw,20px);margin-top:4px}
+#stars{background:var(--p);border:1px solid var(--ln);border-radius:20px;padding:6px 12px;color:var(--cy);font-size:15px}
+#hw{position:relative;height:26vh;min-height:170px;margin:0 10px;border-radius:14px;overflow:hidden;border:1px solid var(--ln)}
+#hall{width:100%;height:100%;display:block}
+.bolt{position:absolute;z-index:5;padding:12px 16px;border-radius:24px;background:var(--am);color:#1a1200;font-weight:700;font-size:17px;animation:pop .5s ease-out,fl 1.6s ease-in-out .5s infinite alternate;box-shadow:0 0 24px #ffb43a99}
+.bolt.fr{background:var(--cy);color:#00222b;box-shadow:0 0 24px #3ee0ff99}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+@keyframes fl{to{transform:translateY(-10px)}}
+#st{margin:8px 16px 0;display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mu)}
+#bar{flex:0 0 38%;height:12px;background:var(--p);border-radius:8px;overflow:hidden;border:1px solid var(--ln)}
+#bar i{display:block;height:100%;width:0;background:var(--gn);transition:width .3s,background .3s}
+#st.hot #bar i{background:var(--rd)}#st.hot #stx{color:var(--am)}
+#tap{margin:10px 16px 6px;height:84px;border-radius:18px;background:linear-gradient(180deg,#1b3a5e,#12233d);border:2px solid var(--cy);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .06s}
+#tap:active{transform:scale(.97);background:#1f4b78}
+#tap b{font-size:26px}#tap span{color:var(--cy);font-size:15px}
+#tap.sg{border-color:var(--am);box-shadow:0 0 26px #ffb43a88}
+#pn{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 12px 12px}
+section{display:none}section.on{display:block}
+#modes{display:flex;gap:8px;margin-bottom:8px}
+#modes button{flex:1;height:48px;border-radius:12px;background:var(--p);border:1px solid var(--ln);font-size:17px}
+#modes button.on{background:var(--cy);color:#00222b;font-weight:700}
+.card{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--p);border:1px solid var(--ln);border-left:6px solid var(--c,var(--cy));border-radius:14px;padding:12px;margin-bottom:8px;min-height:72px}
+.card:active{background:var(--p2)}
+.card.cant{opacity:.45}
+.card.no{animation:sh .25s}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.in{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}.in b{font-size:19px}
+small{color:var(--mu);font-size:13px}
+.pr{text-align:right;display:flex;flex-direction:column;gap:2px}.co{color:var(--am);font-size:19px}
+.box{background:var(--p);border:1px solid var(--ln);border-radius:14px;padding:16px;margin-bottom:10px;line-height:1.5}
+.box h2{margin:0 0 6px;font-size:22px}.box p{margin:6px 0;color:var(--mu)}
+.big{width:100%;height:60px;border-radius:14px;background:var(--cy);color:#00222b;font-weight:700;font-size:20px;margin-top:8px}
+.big.dg{background:var(--rd);color:#fff}.big.al{background:var(--p2);color:var(--tx);border:1px solid var(--ln)}
+.big:disabled{opacity:.35}
+nav{display:flex;border-top:1px solid var(--ln);background:var(--p)}
+nav button{flex:1;height:64px;font-size:17px;color:var(--mu)}nav button.on{color:var(--cy);font-weight:700;box-shadow:inset 0 3px var(--cy)}
+.fl{position:fixed;z-index:20;pointer-events:none;font-weight:700;font-size:22px;color:var(--cy);text-shadow:0 2px 6px #000;animation:up 1s ease-out forwards}
+@keyframes up{to{transform:translateY(-80px);opacity:0}}
+.mod{position:fixed;inset:0;z-index:30;background:#000a;display:flex;align-items:center;justify-content:center;padding:24px}
+.mod .box{max-width:420px;width:100%;margin:0;text-align:center}
+</style></head><body>
+<div id="app">
+<header><div><div id="cr">0</div><div id="cps"></div></div><div id="stars"></div></header>
+<div id="hw"><canvas id="hall"></canvas></div>
+<div id="st"><div id="bar"><i></i></div><span id="stx"></span></div>
+<button id="tap"><b>Run job</b><span id="tv"></span></button>
+<main id="pn">
+<section id="p0" class="on"><div id="modes"></div><div id="bl"></div></section>
+<section id="p1"><div id="ul"></div></section>
+<section id="p2"><div class="box"><h2>Migrate region</h2><p id="mg"></p><button class="big" id="mb"></button></div></section>
+<section id="p3"><div class="box" id="sx"></div><button class="big al" id="sv">Save now</button><button class="big dg" id="rs">Erase everything</button></section>
+</main>
+<nav id="nv"></nav>
+</div><div id="md"></div>
+<script>
+const $=q=>document.querySelector(q);
+const B=[['Pi Cluster',15,.2,.2,'#7dd3fc','Tiny boards, tiny bills.'],['Rack Server',120,1.5,1,'#3ee0ff','Honest 1U compute.'],['GPU Node',1400,10,4,'#a78bfa','Renders, models, miners.'],['Storage Array',15000,60,10,'#34d399','Petabytes on tap.'],['Edge Cluster',170000,350,25,'#ffb43a','Servers near the users.'],['Quantum Core',2e6,2200,60,'#f472b6','Cold and very odd.'],['AI Supercluster',3e7,14000,150,'#ff7a59','Trains on everything.']];
+const SUF=['','K','M','B','T','Qa','Qi','Sx','Sp','Oc'];
+function f(n){if(n<1000)return n<10&&n%1?n.toFixed(1):Math.floor(n)+'';let i=0;while(n>=1000&&i<SUF.length-1){n/=1000;i++}return n.toFixed(n<10?2:n<100?1:0)+SUF[i]}
+const KEY='dc_save_v1';
+const def=()=>({cr:15,run:0,life:0,taps:0,own:B.map(()=>0),up:{},stars:0,last:Date.now(),resets:0,drops:0});
+function load(){try{const j=localStorage.getItem(KEY);if(j){const o=JSON.parse(j);return Object.assign(def(),o,{own:B.map((_,i)=>(o.own&&o.own[i])||0)})}}catch(e){}return def()}
+function save(){try{s.last=Date.now();localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+let s=load(),frenzy=0,mode=1;
+/* upgrades */
+const U=[],RN=['Overclock','Firmware Tune','Custom Silicon'];
+B.forEach((b,i)=>[[10,15,2],[25,150,2],[50,1500,3]].forEach(([n,m,v],k)=>U.push({id:'b'+i+k,n:b[0]+': '+RN[k],d:'Output of '+b[0]+' ×'+v,c:b[1]*m,r:()=>s.own[i]>=n,t:'b',i,v})));
+[['Better Keyboard',150,2],['Macro Pad',2500,2],['Touch Shortcut',4e4,3],['Neural Interface',1e6,5],['Thought Compiler',3e7,10]].forEach(([n,c,v])=>U.push({id:'t'+c,n,d:'Run job power ×'+v,c,r:()=>s.run>=c/3,t:'t',v}));
+[['Fiber Backbone',6e4,1.25],['Load Balancer',1.5e6,1.5],['AI Scheduler',4e7,2],['Global CDN',8e8,2]].forEach(([n,c,v])=>U.push({id:'g'+c,n,d:'All output ×'+v,c,r:()=>s.run>=c/4,t:'g',v}));
+[['Case Fans',400,30],['Raised Floor',4e3,100],['CRAC Units',4.5e4,400],['Liquid Loop',5e5,1500],['Immersion Tanks',6e6,6000],['Cryo Plant',9e7,25000]].forEach(([n,c,v])=>U.push({id:'c'+c,n,d:'Cooling capacity +'+f(v),c,r:()=>s.run>=c/4,t:'c',v}));
+[['UPS Batteries',2500,6],['Diesel Generators',2e5,16],['Solar Farm',8e6,48]].forEach(([n,c,v])=>U.push({id:'o'+c,n,d:'Offline earning window '+v+'h',c,r:()=>s.run>=c/3,t:'o',v}));
+function calc(){let tm=1,gm=1,cool=20,off=2;const bm=B.map(()=>1);
+for(const u of U)if(s.up[u.id]){if(u.t=='t')tm*=u.v;else if(u.t=='g')gm*=u.v;else if(u.t=='c')cool+=u.v;else if(u.t=='o')off=Math.max(off,u.v);else bm[u.i]*=u.v}
+let heat=0,raw=0;B.forEach((b,i)=>{heat+=s.own[i]*b[3];raw+=s.own[i]*b[2]*bm[i]});
+const eff=heat>cool?cool/heat:1,g=gm*(1+.05*s.stars)*(frenzy>0?7:1),cps=raw*g*eff;
+return{tm,cool,off,heat,eff,g,bm,cps,tap:(1+cps*.04)*tm}}
+/* buying */
+const costN=(i,n)=>B[i][1]*Math.pow(1.15,s.own[i])*(Math.pow(1.15,n)-1)/.15;
+function maxN(i){let n=0;while(n<1000&&costN(i,n+1)<=s.cr)n++;return n}
+function nN(i){return mode=='max'?Math.max(1,maxN(i)):mode}
+function bad(e){e.classList.remove('no');void e.offsetWidth;e.classList.add('no')}
+function buyB(i,e){const n=nN(i),c=costN(i,n);if(c>s.cr){bad(e);return}s.cr-=c;s.own[i]+=n}
+/* UI build */
+const NAV=['Build','Upgrades','Region','System'];
+NAV.forEach((n,i)=>{const b=document.createElement('button');b.textContent=n;if(!i)b.className='on';b.onclick=()=>{document.querySelectorAll('section').forEach((x,j)=>x.classList.toggle('on',i==j));[...$('#nv').children].forEach((x,j)=>x.classList.toggle('on',i==j));$('#pn').scrollTop=0};$('#nv').append(b)});
+[[1,'×1'],[10,'×10'],[100,'×100'],['max','Max']].forEach(([v,l],i)=>{const b=document.createElement('button');b.textContent=l;if(!i)b.className='on';b.onclick=()=>{mode=v;[...$('#modes').children].forEach(x=>x.classList.toggle('on',x==b))};$('#modes').append(b)});
+const cards=B.map((b,i)=>{const e=document.createElement('button');e.className='card';e.style.setProperty('--c',b[4]);e.innerHTML=`<div class="in"><b>${b[0]}</b><small>${b[5]}</small><small class="rt"></small></div><div class="pr"><b class="co"></b><small class="ow"></small></div>`;e.onclick=()=>buyB(i,e);$('#bl').append(e);return e});
+let ukey='',ucards=[];
+function buildU(list){$('#ul').innerHTML='';ucards=list.map(u=>{const e=document.createElement('button');e.className='card';e.innerHTML=`<div class="in"><b>${u.n}</b><small>${u.d}</small></div><div class="pr"><b class="co">${f(u.c)}</b></div>`;e.onclick=()=>{if(s.cr<u.c){bad(e);return}s.cr-=u.c;s.up[u.id]=1;save()};$('#ul').append(e);return e});
+if(!list.length)$('#ul').innerHTML='<div class="box"><p>Nothing to research yet. Keep building and new upgrades will appear.</p></div>'}
+function arm(btn,label,fn){btn.dataset.l=label;btn.textContent=label;btn.onclick=()=>{if(btn._a){clearTimeout(btn._t);btn._a=0;btn.textContent=label;fn()}else{btn._a=1;btn.textContent='Tap again to confirm';btn._t=setTimeout(()=>{btn._a=0;btn.textContent=btn.dataset.l},3000)}}}
+const gain=()=>Math.floor(Math.sqrt(s.run/5e7));
+arm($('#mb'),'Migrate to a new region',()=>{const g=gain();if(g<1)return;s.stars+=g;s.resets++;Object.assign(s,{cr:15,run:0,own:B.map(()=>0),up:{}});save();modal(`<h2>New region online</h2><p>You earned ${g} Uptime Star${g>1?'s':''}. Every star adds 5% to all output.</p>`)});
+$('#sv').onclick=()=>{save();$('#sv').textContent='Saved';setTimeout(()=>$('#sv').textContent='Save now',1200)};
+arm($('#rs'),'Erase everything',()=>{s=def();save()});
+function modal(h){const m=document.createElement('div');m.className='mod';m.innerHTML=`<div class="box">${h}<button class="big">Continue</button></div>`;m.querySelector('button').onclick=()=>m.remove();$('#md').append(m)}
+function fl(x,y,t,c){const e=document.createElement('div');e.className='fl';e.textContent=t;e.style.left=(x-30)+'px';e.style.top=(y-20)+'px';if(c)e.style.color=c;document.body.append(e);setTimeout(()=>e.remove(),1000)}
+$('#tap').addEventListener('pointerdown',e=>{const c=calc();s.cr+=c.tap;s.run+=c.tap;s.life+=c.tap;s.taps++;fl(e.clientX+(Math.random()*40-20),e.clientY,'+'+f(c.tap),frenzy>0?'#ffb43a':null)});
+/* events */
+let evT=15;
+function spawn(){const fr=Math.random()<.35,b=document.createElement('button');b.className='bolt'+(fr?' fr':'');b.textContent=fr?'Traffic surge!':'Cash drop!';b.style.left=(5+Math.random()*55)+'%';b.style.top=(5+Math.random()*60)+'%';
+b.onclick=e=>{const c=calc();s.drops++;if(fr){frenzy=20;fl(e.clientX,e.clientY,'Output ×7',' #3ee0ff')}else{const g=Math.max(c.cps*120,25);s.cr+=g;s.run+=g;s.life+=g;fl(e.clientX,e.clientY,'+'+f(g),'#ffb43a')}b.remove()};
+$('#hw').append(b);setTimeout(()=>b.remove(),14000)}
+/* hall canvas */
+const cv=$('#hall'),cx=cv.getContext('2d');let W=0,H=0;
+function rs(){const d=devicePixelRatio||1;W=cv.clientWidth;H=cv.clientHeight;cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0)}
+addEventListener('resize',rs);
+function draw(t,c){const hr=c.heat/c.cool;cx.fillStyle='#0b1326';cx.fillRect(0,0,W,H);
+cx.fillStyle='#0f1a31';cx.fillRect(0,H-26,W,26);cx.strokeStyle='#1a2a4a';for(let x=0;x<W;x+=30){cx.beginPath();cx.moveTo(x,H-26);cx.lineTo(x-20,H);cx.stroke()}
+const cw=W/7,rw=cw*.74,rh=H-52;
+B.forEach((b,i)=>{const x=i*cw+(cw-rw)/2,y=8;cx.fillStyle='#0e1627';cx.strokeStyle='#2a3d63';cx.lineWidth=2;cx.beginPath();cx.roundRect(x,y,rw,rh,6);cx.fill();cx.stroke();
+const n=12,sh=(rh-10)/n,lit=Math.min(n,s.own[i]);
+for(let j=0;j<n;j++){const sy=y+rh-5-(j+1)*sh+1;if(j<lit){cx.fillStyle='#16233f';cx.fillRect(x+4,sy,rw-8,sh-3);cx.fillStyle=b[4];cx.globalAlpha=.55;cx.fillRect(x+7,sy+2,rw*.35,sh-7);cx.globalAlpha=1;
+const on=Math.sin(t*.004*(1+j*.31)+i*7+j*3)>.1;cx.fillStyle=on?(c.eff<1?'#ffb43a':'#7dffb0'):'#223';cx.fillRect(x+rw-14,sy+sh/2-4,6,6)}else{cx.fillStyle='#111b30';cx.fillRect(x+4,sy,rw-8,sh-3)}}
+cx.fillStyle=s.own[i]?b[4]:'#4a5b80';cx.font='700 13px Chakra Petch,system-ui,sans-serif';cx.textAlign='center';cx.fillText(f(s.own[i]),x+rw/2,H-8)});
+if(hr>.6){cx.fillStyle=`rgba(255,70,50,${Math.min(.3,(hr-.6)*.35)*(.8+.2*Math.sin(t*.006))})`;cx.fillRect(0,0,W,H)}}
+/* main loop */
+let lt=performance.now(),wall=Date.now(),saveT=0,mgT=0;
+function away(gap){if(gap<10)return;const c=calc(),sec=Math.min(gap,c.off*3600),g=c.cps*sec*.6;if(g>0){s.cr+=g;s.run+=g;s.life+=g;const m=Math.floor(sec/60);modal(`<h2>Welcome back</h2><p>Your servers kept running for ${m>=60?Math.floor(m/60)+'h '+m%60+'m':m+'m'} and earned ${f(g)} credits.</p>`)}}
+away((Date.now()-s.last)/1000);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)save();else{away((Date.now()-wall)/1000);wall=Date.now();lt=performance.now()}});
+function loop(now){const dt=Math.min((now-lt)/1000,.5);lt=now;wall=Date.now();
+const c=calc(),g=c.cps*dt;s.cr+=g;s.run+=g;s.life+=g;
+if(frenzy>0)frenzy=Math.max(0,frenzy-dt);
+if((evT-=dt)<=0){spawn();evT=40+Math.random()*40}
+if((saveT+=dt)>5){saveT=0;save()}
+$('#cr').textContent=f(s.cr);$('#cps').textContent=f(c.cps)+' credits/s'+(frenzy>0?'  Surge ×7 for '+Math.ceil(frenzy)+'s':'');
+$('#stars').textContent='★ '+s.stars+' (+'+s.stars*5+'%)';
+$('#bar i').style.width=Math.min(100,c.cool/Math.max(c.heat,1e-9)*100)+'%';
+$('#st').classList.toggle('hot',c.eff<1);
+$('#stx').textContent=c.eff<1?'Throttled to '+Math.round(c.eff*100)+'%. Buy cooling in Upgrades.':'Heat '+f(c.heat)+' of '+f(c.cool)+' cooling';
+$('#tv').textContent='+'+f(c.tap)+' credits';$('#tap').classList.toggle('sg',frenzy>0);
+B.forEach((b,i)=>{const e=cards[i],n=nN(i),cost=costN(i,n);e.querySelector('.co').textContent=f(cost);e.querySelector('.ow').textContent='Owned '+s.own[i]+(n>1?'  Buy '+n:'');e.querySelector('.rt').textContent='Makes '+f(b[2]*c.bm[i]*c.g)+'/s each, heat '+f(b[3]);e.classList.toggle('cant',cost>s.cr)});
+const list=U.filter(u=>!s.up[u.id]&&u.r()).sort((a,b)=>a.c-b.c),k=list.map(u=>u.id).join();
+if(k!=ukey){ukey=k;buildU(list)}list.forEach((u,i)=>ucards[i]&&ucards[i].classList.toggle('cant',u.c>s.cr));
+const gn=gain();$('#mg').innerHTML=`Move to a fresh region. Credits, servers and upgrades reset, but you keep Uptime Stars. Each star boosts all output by 5%.<br><br>Stars now: <b>${s.stars}</b><br>Stars if you migrate: <b style="color:var(--cy)">+${gn}</b>`+(gn<1?'<br>Earn more this run to unlock your first star.':'');$('#mb').disabled=gn<1;
+if((mgT+=dt)>.4){mgT=0;$('#sx').innerHTML=`<h2>Stats</h2>Lifetime credits: ${f(s.life)}<br>This run: ${f(s.run)}<br>Jobs run: ${f(s.taps)}<br>Drops caught: ${s.drops}<br>Migrations: ${s.resets}<br>Offline window: ${c.off}h at 60%<br>Servers: ${f(s.own.reduce((a,b)=>a+b,0))}`}
+draw(now,c);requestAnimationFrame(loop)}
+['contextmenu','gesturestart','dblclick'].forEach(e=>document.addEventListener(e,x=>x.preventDefault()));
+rs();requestAnimationFrame(loop);
+</script></body></html>
